@@ -3,25 +3,17 @@
 
 #primeiro teste do algoritmo de euler para python 2.7
 #nesta versao nao me preocupei com a eficiencia e nem com o rigor, a intencao era apenas testar o algoritmo de euler.
-
-
 import matplotlib.pyplot as plt
 import math
 import numpy as np
 
 
 #calcula o erro para os parametros escolhidos do metodo de euler
-# e(t,h) = ( euler(t,2*delta_t) - euler(t,delta_t) )
+# e( t, delta_t ) = ( euler( t, 2*delta_t ) - euler( t, delta_t ) )
 def erro_euler( dy_dx, delta_t, t ):
 
 	return metodo_euler( dy_dx, 2*delta_t, t ) - metodo_euler( dy_dx, delta_t, t )
 
-
-#uma derivada usada apenas para testar o metodo de euler com uma funcao mais simples
-#aqui estamos simulando uma funcao com derivada constante
-def dy_dx_teste( t ):
-
-	return 0.5
 
 
 #uma funcao que retorna o tamanho do delta_h para que se tenha o numero de passos desejados
@@ -31,62 +23,107 @@ def calcula_delta_t( t_inicial, t_final, numero_de_iteracoes ):
 	return float(t_final - t_inicial) / float(numero_de_iteracoes)
 
 
-#derivada da funcao que queremos aproximar no exercicio da tarefa 1
-# e^t * (sen(2t) + 2(cos2t))
-def dy_dx( t ):
 
-	return math.exp(t)*( math.sin(2*t) + 2*math.cos(2*t) )
+#dx_dy é a derivada da funcao que vamos aproximar
+#suponho que a contagem do tempo se inicie no tempo zero
+#TODO adaptar a funcao para definir o delta_t na chamada
+def metodo_euler( dy_dx, t_final, t_inicial = 0, delta_t = None, numero_de_iteracoes = None, y_inicial = 0  ):
 
+	y = [y_inicial]
 
-#dx_dy é a funcao que representa a devirada
-#delta_t eh o tamanho do passo
-#y é a funcao que queremos aproximar
-def metodo_euler( dy_dx, delta_t, numero_de_iteracoes, y_inicial = 0  ):
+	if(delta_t is None):
+		delta_t = t_final / numero_de_iteracoes
 
-	#y_discretizada eh uma lista com os valores que y assume durante as iterações
-	y_discretizada = [y_inicial]
+	tempo = np.arange( t_inicial, t_final, delta_t )
+	for t in  tempo :
+		y.append( y[-1] + delta_t*dy_dx(t) )
 
-
-	#o menos 1 se deve ao fato de eu considerar o y_inicial como a primeira iteracao
-	for i in range(numero_de_iteracoes-1): 
-		y_discretizada.append( y_discretizada[-1] + delta_t*dy_dx( y_discretizada[-1] ) )
-
-
-	return y_discretizada
+	return y
 
 
 
-#eu sei que python nao precisa de main, estou colocando apenas para fins esteticos
-def main():
+def metodo_euler_modificado( dy_dx, t_final, t_inicial = 0, numero_de_iteracoes = None, delta_t = None, y_inicial = 0 ):
 
-	#este foi o meu primeiro teste, apenas para checar se a sintaxe do programa funcionava
-	#teste = metodo_euler( dy_dx_teste, delta_t =  1, numero_de_iteracoes = 5, y_inicial = 1 )
-	#print( teste )
-	#plt.plot( range(5) , teste, 'ro' )
-	#plt.figure()
+	y = [y_inicial]
+	if(delta_t is None):
+		delta_t = float(t_final)/float(numero_de_iteracoes)
 
-	#testando com a funcao dy_dx
-	#teste_dois = metodo_euler( dy_dx, 0.5, 2, 1 )
-	#print(teste_dois)
-	#plt.plot( range(2) , teste_dois, 'ro' )
-	#plt.plot( range(2) , teste_dois )
-	#plt.show()
+	tempo = np.arange( t_inicial, t_final, delta_t )
+	for t in  tempo :
+		y.append( y[-1] + delta_t*((dy_dx(t) + dy_dx(t + delta_t))/2.0))
+
+	return y
 
 
-	#testando a funcao calcula_delta_t
-	#for i in range(10):
-	#	iteracoes = 2**i 
-	#	delta_t = calcula_delta_t( 0, 1, iteracoes)
-	#	print(iteracoes, delta_t)
+
+#é necessaria uma analise prévia que garanta:
+#	a derivada nos pontos inicial e final tenham sinais diferentes
+#	haja apenas uma solucao no intervalo
+# mais ou menos como uma busca binaria?
+def dicotomia( dy_dx, inicio_do_intervalo, fim_do_intervalo, precisao = 0.0001 ):
+
+	if( dy_dx(fim_do_intervalo) >= 0 and dy_dx(inicio_do_intervalo) <=0 ):
+		concavidade = True
+
+	elif( dy_dx(fim_do_intervalo)  <= 0 and dy_dx(inicio_do_intervalo) >= 0 ):
+		concavidade = False
+
+	else:
+		print('Erro!')
+		return
 
 
-	#resolucao do problema
-	for i in range(5, 10):
-		numero_de_iteracoes = 2**i
-		delta_t = calcula_delta_t(0, 1, numero_de_iteracoes)
-		y_aproximada = metodo_euler( dy_dx, delta_t, numero_de_iteracoes, y_inicial = 1 )
-		plt.plot( np.arange( 0, 1, delta_t ), y_aproximada )
+	pivo = (inicio_do_intervalo + fim_do_intervalo)/2.0
+	derivada = dy_dx(pivo)
 
-	plt.show()
+	while( -1.0*precisao >= derivada and derivada >= precisao ):
 
-main()
+		if( derivada >= 0 ):
+			if( concavidade is True ):
+				inicio_do_intervalo = pivo
+			else:
+				fim_do_intervalo = pivo
+		else:
+			if( concavidade is True ):
+				fim_do_intervalo = pivo
+			else:
+				inicio_do_intervalo = pivo
+
+		pivo = (inicio_do_intervalo + fim_do_intervalo)/2.0
+		derivada = dy_dx(pivo)
+
+	return pivo
+
+
+
+
+#inicios é um numpy array com os valores iniciais de X1, X2, X3, em diante.
+#derivadas é um numpy array de funções que deve ter o mesmo tamanho que inícios.
+#tempo inicial, tempo final: Float
+#num_iteracoes: inteiro
+def euler_presa_predador( inicios, tempo_inicial, tempo_final, derivadas, num_iteracoes ):
+
+	delta_h = ( tempo_final - tempo_inicial)/num_iteracoes
+	num_dim = len( inicios )
+	answer = np.zeros( num_dim, num_iteracoes )
+	answer[ :, 0] = inicios
+	tempo = np.arange( tempo_inicial, tempo_final, delta_h )
+
+	for i in range(1,num_iteracoes):
+		for dim in num_dim:
+			answer[ dim ][ i ] = answer[dim] [i-1] + derivadas[dim]( answer[:, i-1], tempo[i] )
+
+	return answer
+
+
+
+#TODO
+def newton():
+	pass
+
+
+#TODO
+def newton_multidimensional():
+	pass
+
+
