@@ -24,8 +24,6 @@ def calcula_delta_t( t_inicial, t_final, numero_de_iteracoes ):
 
 
 
-#TODO: padronizar metodos e nomes de variaveis
-
 
 #dx_dy é a derivada da funcao que vamos aproximar
 def metodo_euler( dy_dx, t_final, t_inicial = 0, delta_t = None, numero_de_iteracoes = None, y_inicial = 0  ):
@@ -59,20 +57,24 @@ def metodo_euler_modificado( dy_dx, t_final, t_inicial = 0, numero_de_iteracoes 
 
 
 
-#inicios é um numpy array com os valores iniciais de X1, X2, X3, em diante.
+#valores_iniciais é um numpy array com os valores iniciais de X1, X2, X3, em diante.
 #derivadas é um numpy array de funções que deve ter o mesmo tamanho que inícios.
 #tempo inicial, tempo final: Float
 #num_iteracoes: inteiro
 
 #Euler explicito para várias dimenssões
 
-def euler_multidim( inicios, tempo_inicial, tempo_final, derivadas, num_iteracoes ):
+def euler_multidim( valores_iniciais, derivadas, t_inicial = 0, t_final = None, delta_h = None, num_iteracoes = None ):
 
-	delta_h = ( tempo_final - tempo_inicial)/num_iteracoes
-	num_dim = len( inicios )
+	if( delta_h == None ):
+		delta_h = ( t_final - t_inicial)/num_iteracoes
+	elif( num_iteracoes == None ):
+		num_iteracoes = int( ( t_final - t_inicial)/delta_h )
+
+	num_dim = len( valores_iniciais )
 	answer = np.zeros(( num_dim, num_iteracoes ))
-	answer[ :, 0] = inicios
-	tempo = np.arange( tempo_inicial, tempo_final, delta_h )
+	answer[ :, 0] = valores_iniciais
+	tempo = np.arange( t_inicial, t_final, delta_h )
 
 	for i in range(1,num_iteracoes):
 		for dim in range(num_dim):
@@ -85,10 +87,14 @@ def euler_multidim( inicios, tempo_inicial, tempo_final, derivadas, num_iteracoe
 #If nome do arquivo == None, a função retorna os valores das integrais.
 #CAso o contrário, a função escreverá esses valores no arquivo.
 #valores iniciais: Numpy array
-def euler_modificado_multidim( valores_iniciais, derivadas, deltah = None, num_iteracoes = None, t_inicial = 0, t_final = None, nome_do_arquivo = None ):
+def euler_modificado_multidim( valores_iniciais, derivadas, t_inicial = 0, t_final = None, delta_h = None, num_iteracoes = None ):
+
+	if( delta_h == None ):
+		delta_h = ( t_final - t_inicial)/num_iteracoes
+	elif( num_iteracoes == None ):
+		num_iteracoes = int( ( t_final - t_inicial)/delta_h )
 
 	ndim = valores_iniciais.shape[0]
-	#num_iteracoes = ( t_final - t_inicial )/deltah
 	answer = np.zeros(( ndim, num_iteracoes ))
 	answer[ :, 0 ] = valores_iniciais
 	t = t_inicial
@@ -96,11 +102,10 @@ def euler_modificado_multidim( valores_iniciais, derivadas, deltah = None, num_i
 
 	for i in range( num_iteracoes - 1 ):
 
-		#TODO ERRO AQUI
 		d1 = np.array( [ derivadas[j]( t, answer[ : , i] ) for j in range(ndim) ] )
-		d2 = np.array( [ derivadas[j]( t + deltah, answer[ : , i ] + deltah*d1 ) for j in range(ndim) ] )
-		answer[ : , i+1 ] = answer[ : , i] + deltah * (( d1 + d2 ) / 2.0)
-		t = t + deltah
+		d2 = np.array( [ derivadas[j]( t + delta_h, answer[ : , i ] + delta_h*d1 ) for j in range(ndim) ] )
+		answer[ : , i+1 ] = answer[ : , i] + delta_h * (( d1 + d2 ) / 2.0)
+		t = t + delta_h
 
 
 	return answer
