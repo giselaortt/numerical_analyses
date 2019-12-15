@@ -13,17 +13,18 @@ import numpy as np
 import math
 
 
+
 def metodo_euler_modificado( dy_dx, t_final, t_inicial = 0, numero_de_iteracoes = None, delta_t = None, y_inicial = 0 ):
 
 	y = [y_inicial]
 	if(delta_t is None):
 		delta_t = float(t_final)/float(numero_de_iteracoes)
-	t = 0
-
 
 	tempo = np.arange( t_inicial, t_final, delta_t )
 	for t in  tempo :
-		y.append( y[-1] + delta_t*((dy_dx(t) + dy_dx(t + delta_t))/2.0))
+		k1 = dy_dx(t, y[-1])
+		k2 = dy_dx(t + delta_t, y[-1] + delta_t * k1 )
+		y.append( y[-1] + (delta_t / 2.0) * ( k1 + k2 ))
 
 	return y
 
@@ -35,7 +36,7 @@ def primitiva( t ):
 
 
 
-def dy_dx( t ):
+def dy_dx( t, x ):
 
 	return math.exp(t)*( math.sin( 2.0 * t ) + 2.0*math.cos( 2.0 * t ) )
 
@@ -49,6 +50,7 @@ def questao_tres():
 		teste = metodo_euler_modificado( dy_dx, 1, delta_t = delta_t, y_inicial = 1 )
 		#stop + step se faz necessario uma vez que a biblioteca numpy faz um intervalo aberto
 		plt.plot( np.arange( 0, 1 + delta_t, delta_t ), teste )
+		plt.show()
 
 
 	tempo = np.arange( 0,1+delta_t, delta_t )

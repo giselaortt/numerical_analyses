@@ -7,10 +7,6 @@ ALUNA:  GISELA MOREIRA ORTT
 NUSP:   8937761
 '''
 
-
-
-
-
 '''
 Sistema para aproximar:
 X' = 0.87x(t) - 0.27x(t)y(t)
