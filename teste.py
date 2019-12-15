@@ -43,34 +43,36 @@ x(0) = 3.5
 y(0) = 2.7.
 '''
 
+#vector should be an array with size 2
+def x_um_linha( tempo, vector ):
 
-def x_um_linha( x_um, x_dois, tempo ):
-
-	return 0.87 * x_um - 0.27 * x_um * x_dois
-
-
-
-def x_dois_linha( x_um, x_dois, tempo ):
-
-	return -0.038 * x_dois + 0.25 * x_dois * x_um
+	return 0.87 * vector[0] - 0.27 * vector[0] * vector[1]
 
 
-#TODO criar um teste para funcoes de mais d euma dimenssão
-def teste_2dim( metodo ):
+#vector should be an array with size 2
+def x_dois_linha( tempo, vector ):
 
-	'''x_inicial = 3.5
+	return -0.038 * vector[1] + 0.25 * vector[1] * vector[0]
+
+
+def teste_multidim( metodo ):
+
+	x_inicial = 3.5
 	y_inicial = 2.7
 	###############
-	aprox_x, aprox_y = trapezio( x_inicial, y_inicial, 0.0, 1.0, x_um_linha, x_dois_linha, num_iteracoes = 500 )
+	answer = metodo( valores_iniciais = np.array([x_inicial, y_inicial]), t_inicial = 0.0, t_final = 1.0, derivadas =  [x_um_linha, x_dois_linha], deltah = 1.0/500.0, num_iteracoes = 500 )
+
 	#TODO how to plot with 3 variables?
 	tempo = np.arange( 0.0, 1.0, 1.0/500.0 )
-	print( len(aprox_x), len(tempo) )
-	plt.plot( tempo, aprox_x, color = 'green' )
-	plt.plot( tempo, aprox_y, color = 'red' )
+	#print( len(aprox_x), len(tempo) )
+	plt.plot( tempo, answer[0], color = 'green' )
+	plt.plot( tempo, answer[1], color = 'red' )
 	plt.xlabel('tempo')
 	plt.ylabel('aproximações')
-	plt.show()'''
+	plt.show()
 
-	pass
+teste_multidim( euler_explicito.euler_modificado_multidim )
+
+	
 
 

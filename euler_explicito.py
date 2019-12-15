@@ -24,6 +24,9 @@ def calcula_delta_t( t_inicial, t_final, numero_de_iteracoes ):
 
 
 
+#TODO: padronizar metodos e nomes de variaveis
+
+
 #dx_dy é a derivada da funcao que vamos aproximar
 def metodo_euler( dy_dx, t_final, t_inicial = 0, delta_t = None, numero_de_iteracoes = None, y_inicial = 0  ):
 
@@ -67,99 +70,36 @@ def euler_multidim( inicios, tempo_inicial, tempo_final, derivadas, num_iteracoe
 
 	delta_h = ( tempo_final - tempo_inicial)/num_iteracoes
 	num_dim = len( inicios )
-	answer = np.zeros( num_dim, num_iteracoes )
+	answer = np.zeros(( num_dim, num_iteracoes ))
 	answer[ :, 0] = inicios
 	tempo = np.arange( tempo_inicial, tempo_final, delta_h )
 
 	for i in range(1,num_iteracoes):
-		for dim in num_dim:
+		for dim in range(num_dim):
 			answer[ dim ][ i ] = answer[dim] [i-1] + delta_h * derivadas[dim]( answer[:, i-1], tempo[i] )
 
 	return answer
 
 
-#If nome do arquivo == None, a função retorna os valores das integrais.
-#CAso o contrário, a função escreverá esses valores no arquivo.
-#TODO adaptar para várias variáveis
-def euler_modificado_2d( x_inicial, y_inicial, derx, dery, deltah, t_inicial= 0, t_final = None ,nome_do_arquivo = None ):
-
-	if(nome_do_arquivo is None):
-		x = [x_inicial]
-		y = [y_inicial]
-
-	else:
-		arquivo = open( nome_do_arquivo, 'w')
-		arquivo.writelines( '{} {}\n'.format( x_inicial, y_inicial ) )
-
-	t = t_inicial
-	x_atual, y_atual= x_inicial, y_inicial
-
-	while( t <= t_final ):
-		t = t + deltah
-
-		dx1 = derx( t, x_atual, y_atual )
-		dy1 = dery( t, x_atual, y_atual )
-		dy2 = dery( t + deltah , x_atual + deltah*dx1, y_atual + deltah*dy1 )
-		dx2 = derx( t + deltah, x_atual + deltah*dx1, y_atual + deltah*dy1 )
-
-		y_atual = y_atual + 0.5*deltah*( dy1 + dy2 )
-		x_atual = x_atual + 0.5*deltah*( dx1 + dx2 )
-
-		if( nome_do_arquivo is None ):
-			x.append( x_atual )
-			y.append( y_atual )
-
-		else:
-			arquivo.writelines( '{}	{}	{}\n'.format( t, x_atual, y_atual ) )
-
-
-	if( nome_do_arquivo is None ):
-		return x, y
-
-	else:
-		arquivo.close()
-
 #TODO testar
 #If nome do arquivo == None, a função retorna os valores das integrais.
 #CAso o contrário, a função escreverá esses valores no arquivo.
 #valores iniciais: Numpy array
-def euler_modificado_multidim( valores_iniciais, derivadas, deltah, t_inicial = 0, t_final = None, nome_do_arquivo = None ):
+def euler_modificado_multidim( valores_iniciais, derivadas, deltah = None, num_iteracoes = None, t_inicial = 0, t_final = None, nome_do_arquivo = None ):
 
-	#if(nome_do_arquivo is None):
-	num_iteracoes = ( t_final - t_inicial )/deltah
-	answer = np.zeros(( ndim, num_iteracoes ))
-
-#	else:
-#		arquivo = open( nome_do_arquivo, 'w')
-#		arquivo.writelines( valores_iniciais )
-
-	t = t_inicial
 	ndim = valores_iniciais.shape[0]
-	#x_atual, y_atual= x_inicial, y_inicial
+	#num_iteracoes = ( t_final - t_inicial )/deltah
+	answer = np.zeros(( ndim, num_iteracoes ))
+	answer[ :, 0 ] = valores_iniciais
+	t = t_inicial
 
-	for i in range( num_iteracoes ):
 
-		#dx1 = derx( t, x_atual, y_atual )
-		#dy1 = dery( t, x_atual, y_atual )
-		d1 = [ der[j]( t, answer[ : ][ i ] ) for j in ndim ]
+	for i in range( num_iteracoes - 1 ):
 
-		#dy2 = dery( t + deltah , x_atual + deltah*dx1, y_atual + deltah*dy1 )
-		#dx2 = derx( t + deltah, x_atual + deltah*dx1, y_atual + deltah*dy1 )
-
-		d2 = [ der[j]( t + deltah, answer[ : ][ i ] + deltah*d1 ) ]
-
-		#y_atual = y_atual + 0.5*deltah*( dy1 + dy2 )
-		#x_atual = x_atual + 0.5*deltah*( dx1 + dx2 )
-
-		answer[ : ][ i+1 ] = answer[ : ][i] + deltah * (( d1 + d2 ) / 2.0)
-
-		#if( nome_do_arquivo is None ):
-		#	x.append( x_atual )
-		#	y.append( y_atual )
-
-		#else:
-		#	arquivo.writelines( '{}	{}	{}\n'.format( t, x_atual, y_atual ) )
-
+		#TODO ERRO AQUI
+		d1 = np.array( [ derivadas[j]( t, answer[ : , i] ) for j in range(ndim) ] )
+		d2 = np.array( [ derivadas[j]( t + deltah, answer[ : , i ] + deltah*d1 ) for j in range(ndim) ] )
+		answer[ : , i+1 ] = answer[ : , i] + deltah * (( d1 + d2 ) / 2.0)
 		t = t + deltah
 
 
