@@ -147,7 +147,7 @@ interpolacao:  classe Bilinear. método para se aproximar a altura da função f
 metodo: o metodo de discretização escolhido. para esse caso, o método de euler explícito. pela facilidade em implementa-lo.
 xlinha, ylinha: derivadas. tragetória normal o robô para quando não há um obstáculo.
 '''
-def controle( neural, interpolacao, xlinha, ylinha, deltah, obstáculos, nome_do_arquivo, alcance_sensor = 10, nrobos = 2, t_max = 10000 ):
+def controle( neural, interpolacao, xlinha, ylinha, deltah, obstaculos, nome_do_arquivo, alcance_sensor = 10, nrobos = 2, t_max = 10000 ):
 
 	posicoes = np.random.rand( nrobos, 2 ) #iniciando-os em posicoes aleatorias
 	arquivo = open( nome_do_arquivo, 'w')

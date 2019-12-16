@@ -9,6 +9,9 @@ from neural import Network
 from math import pi
 from math import acos
 from math import sin, cos
+import matplotlib.pyplot as plt
+from datetime import datetime
+
 
 '''
 meu robô terá uma velocidade fixa constante, por simplicidade
@@ -48,37 +51,45 @@ def ylinha( t, x, y ):
 
 
 class Controle:
-	def __init__(self, inputSize = 8, hiddenSize = 20, outputSize = 4, velocity = 50):
+	def __init__(self, inputSize = 8, hiddenSize = 20, outputSize = 4, hiddenLayer = None, outputLayer = None):
 
-		self.neural = Network( inputSize, hiddenSize, outputSize )
+		self.neural = Network( inputSize, hiddenSize, outputSize, hiddenLayer, outputLayer )
 
 	def cross_over( self, partner ):
 
-		kid = Network( 8, 20, 4, ((self.hiddenLayer + partner.hiddenLayer )/2.0 ) , ((self.outputLayer + partner.outputLayer )/2.0 ))
+		kid = Controle( self.neural.inputSize, self.neural.hiddenSize, self.neural.outputSize, ((self.neural.hiddenLayer + partner.neural.hiddenLayer )/2.0 ) , ((self.neural.outputLayer + partner.neural.outputLayer )/2.0 ))
 		return kid
 
 	def mutation(self, seed):
 
-		position = random.randint( 0, hiddenSize * ( outputSize + 1 ) )
-		position2 = random.randint( 0, inputSize * ( hiddenSize + 1 ) )
-		self.hiddenLayer[ a/hiddenSize ][ a%(inputSize + 1) ] + seed
-		self.outputLayer[ a/outputSize ][ a%(hiddenSize + 1) ] + seed
+		#mutation on hidden layer
+		position = np.random.randint( 0, (self.neural.inputSize + 1) * ( self.neural.hiddenSize) )
+		if( position == (self.neural.inputSize + 1) * ( self.neural.hiddenSize) ):
+			print(': ooooooo')
+		self.neural.hiddenLayer[ int(position/self.neural.hiddenSize) ][ position%(self.neural.hiddenSize) ] += seed
+
+		#mutation on output layer
+		position = np.random.randint( 0, (self.neural.hiddenSize + 1) * ( self.neural.outputSize ) )
+		if( position == (self.neural.hiddenSize + 1) * ( self.neural.outputSize ) ):
+			print(': ooooooo')
+		self.neural.outputLayer[ int(position/self.neural.outputSize) ][ position%(self.neural.outputSize) ] += seed
 
 
 '''
 population: list of objects that should implement cross-over, random_selection and mutation methods.
 mutation_probability: float between 0 and 1. indicates the probability of mutation.
 '''
-def GeneticAlgorithm( fitness, population_size = 10, frequency = 0, mutation_probability=0.005, mutation_range = 0.1, max_iteration = 5000 ):
+def GeneticAlgorithm( fitness, population,population_size = 150, frequency = 0, mutation_probability=0.2, mutation_range = 0.51, max_iteration = 50000 ):
 
 	seed = np.random.uniform( -10, 10, population_size )
-	population = [ Controle() for _ in range( population_size ) ]
 	for i in range( max_iteration ):
 
 		fits = fitness.fit( population )
-		media = fits.mean()
-		maxima = fits.max()
-		mom,dad = np.random.choice( population, size = 2, replace = False, p = ((fits)/ ( np.sum(fits)) ))
+		#print(fits)
+		#media = np.mean(fits)
+		#maxima = fits.max(fits)
+		#mom,dad = np.random.choice( population, size = 2, replace = False, p = ((fits)/ ( np.sum(fits)) ))
+		mom, dad = np.random.choice( population, size = 2, replace = False )
 		kid = mom.cross_over( dad )
 
 		if  random.random() <= mutation_probability :
@@ -86,15 +97,19 @@ def GeneticAlgorithm( fitness, population_size = 10, frequency = 0, mutation_pro
 
 		population[ fits.argmin() ] = kid
 
-		if( i % 100 == 0  ):
-			plt.plot(  )
-			plt.xlim( -10, 10 )
-			plt.ylim( -25, 25 )
-			plt.show()
+		if( i % 1000 == 0  ):
+			#ODO FIZ PLOTTING
+			print( 'max = ', fits.max(), 'med = ', fits.mean() )
+		#	plt.plot(  )
+			#plt.xlim( -10, 10 )
+			#plt.ylim( -25, 25 )
+		#	plt.show()
 
 
 	# selecionar o melhor robo
-	population[ fits.argmax() ].write_to_file('controle.txt')
+		#return
+	print(population[ fits.argmax() ].neural.hiddenLayer)
+	print( population[ fits.argmax() ].neural.outputLayer )
 	return
 
 def distancia( pontoa, pontob ):
@@ -267,8 +282,9 @@ class fitness:
 
 
 def teste():
-
-	GeneticAlgorithm( fitness(10) )
+	population_size = 10
+	pop = [ Controle() for _ in range( population_size ) ]
+	GeneticAlgorithm( fitness(10), pop )
 
 
 if __name__ == '__main__':
