@@ -57,7 +57,26 @@ class Controle:
 
 	def cross_over( self, partner ):
 
-		kid = Controle( self.neural.inputSize, self.neural.hiddenSize, self.neural.outputSize, ((self.neural.hiddenLayer + partner.neural.hiddenLayer )/2.0 ) , ((self.neural.outputLayer + partner.neural.outputLayer )/2.0 ))
+		#TODO mudar o cross over
+
+		hidden = np.zeros((self.neural.inputSize+1, self.neural.hiddenSize))
+		output = np.zeros((self.neural.hiddenSize+1, self.neural.outputSize))
+
+		for i in range( 0,  self.neural.inputSize+1 ):
+			for j in range( 0,  self.neural.hiddenSize ):
+				if( random.randint( 1, 2 ) %2 == 0 ):
+					hidden[i][j] = self.neural.hiddenLayer[i][j]
+				else:
+					hidden[i][j] = partner.neural.hiddenLayer[i][j]
+
+		for i in range( 0, self.neural.hiddenSize + 1 ):
+			for j in range( 0, self.neural.outputSize ):
+				if( random.randint( 1, 2 ) %2 == 0 ):
+					output[i][j] = self.neural.outputLayer[i][j]
+				else:
+					output[i][j] = partner.neural.outputLayer[i][j]
+
+		kid = Controle( self.neural.inputSize, self.neural.hiddenSize, self.neural.outputSize, hidden , output )
 		return kid
 
 	def mutation(self, seed):
@@ -79,38 +98,53 @@ class Controle:
 population: list of objects that should implement cross-over, random_selection and mutation methods.
 mutation_probability: float between 0 and 1. indicates the probability of mutation.
 '''
-def GeneticAlgorithm( fitness, population,population_size = 150, frequency = 0, mutation_probability=0.2, mutation_range = 0.51, max_iteration = 50000 ):
+def GeneticAlgorithm( fitness, episilon, population,population_size = 150, frequency = 0, mutation_probability=0.2, taxa_de_natalidade = 0.3, mutation_range = 0.51, max_iteration = 50000 ):
 
 	seed = np.random.uniform( -10, 10, population_size )
 	for i in range( max_iteration ):
 
-		fits = fitness.fit( population )
-		#print(fits)
+		#escolha elitista
+		#fits = fitness.fit( population )
 		#media = np.mean(fits)
 		#maxima = fits.max(fits)
 		#mom,dad = np.random.choice( population, size = 2, replace = False, p = ((fits)/ ( np.sum(fits)) ))
-		mom, dad = np.random.choice( population, size = 2, replace = False )
-		kid = mom.cross_over( dad )
 
-		if  random.random() <= mutation_probability :
-			kid.mutation( mutation_range )
+		#escolha aleatória -> todos tem a mesma chance de ter filhos
+		fits = fitness.fit( population )
 
-		population[ fits.argmin() ] = kid
+		if( np.max( fits ) > -1 * 0.02 ):
+			print('parabens')
+			break
 
-		if( i % 1000 == 0  ):
+		if( fits.max() - fits.mean() <= 0.0001 ):
+			print( 'faltou variabilidade genetica na populacao' )
+			break
+
+
+		for _ in range( 0, int(taxa_de_natalidade * population_size) ):
+			mom, dad = np.random.choice( population, size = 2, replace = False )
+			kid = mom.cross_over( dad )
+
+			if  random.random() <= mutation_probability :
+				kid.mutation( mutation_range )
+
+			enemy =  random.randint( 0, population_size - 1 )
+			kidfit = fitness.fit( [kid] )
+			#print('kidfit = ', kidfit)
+			if( kidfit >= fits[ enemy ] ):
+				fits[ enemy ] = kidfit
+				population[ enemy ] = kid
+
+		if( i % 50 == 0  ):
 			#ODO FIZ PLOTTING
 			print( 'max = ', fits.max(), 'med = ', fits.mean() )
-		#	plt.plot(  )
-			#plt.xlim( -10, 10 )
-			#plt.ylim( -25, 25 )
-		#	plt.show()
 
 
 	# selecionar o melhor robo
 		#return
 	print(population[ fits.argmax() ].neural.hiddenLayer)
 	print( population[ fits.argmax() ].neural.outputLayer )
-	return
+	return population[np.argmax(fits) ]
 
 def distancia( pontoa, pontob ):
 
