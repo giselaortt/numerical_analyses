@@ -11,6 +11,7 @@ from math import acos
 
 
 class Bilinear:
+
 	def __init__( self, x_inicial, x_final, y_inicial, y_final, delta, psy, epislon = 0.00001 ):
 
 		self.x_inicial = x_inicial
@@ -146,6 +147,7 @@ neural: uma rede neural, da classe Network, que traduz a estratégia do robô em
 interpolacao:  classe Bilinear. método para se aproximar a altura da função fi.
 metodo: o metodo de discretização escolhido. para esse caso, o método de euler explícito. pela facilidade em implementa-lo.
 xlinha, ylinha: derivadas. tragetória normal o robô para quando não há um obstáculo.
+nrobos: ao menos dois, afinal, caso o contrário não poderia haver colisões
 '''
 def controle( neural, interpolacao, xlinha, ylinha, deltah, obstaculos, nome_do_arquivo, alcance_sensor = 10, nrobos = 2, t_max = 10000 ):
 
@@ -153,7 +155,7 @@ def controle( neural, interpolacao, xlinha, ylinha, deltah, obstaculos, nome_do_
 	arquivo = open( nome_do_arquivo, 'w')
 	distancia_percorrida = np.zeros( (nrobos) )
 	t = 0.0
-	arquivo.writelines( t, posicoes )
+	arquivo.writelines( str(posicoes) )
 	colisao  = False
 
 	while( distancia_percorrida.max() < 850.0 and t <= t_max and colisao == False ):
@@ -167,7 +169,7 @@ def controle( neural, interpolacao, xlinha, ylinha, deltah, obstaculos, nome_do_
 			visao_do_robo = np.zeros((8))
 
 			for j in range( nrobos ):
-				if( j != i and ((( posicoes[i][0] - posicoes[j][0] )**2 + ( posicoes[i][1] - posicoes[j][1] )**2 )**0.5) < alcance ):
+				if( j != i and ((( posicoes[i][0] - posicoes[j][0] )**2 + ( posicoes[i][1] - posicoes[j][1] )**2 )**0.5) < alcance_sensor ):
 					adjacencia = True
 
 					#fazer o calculo do angulo entre os dois robos, em radianos
@@ -189,7 +191,8 @@ def controle( neural, interpolacao, xlinha, ylinha, deltah, obstaculos, nome_do_
 						a = (posicoes[i][1] - posicao_anterior[i][1])/(posicoes[i][0] - posicao_anterior[i][0])
 						b = posicoes[i][1] - a*posicoes[0]
 						#se o robo j esta a direita do robo i
-						if( a*posicoes[j][0] + b  > posicoes[j][1] ):
+						print( 'a = ', a, 'b = ', b)
+						if( a * posicoes[j][0] + b  > posicoes[j][1] ):
 
 							#frente-direita
 							if( pi/18.0 < angulo and angulo <= 3.0*pi/8.0 ):
@@ -227,31 +230,31 @@ def controle( neural, interpolacao, xlinha, ylinha, deltah, obstaculos, nome_do_
 			#caso o contrário, será acionada a rede que vai tratar de virar o robô na direçao desejada pra que se evite a colisão. a velocidade do robo permanecerá constante.
 			else: 
 
-				comando = numpy.argmax(neural.run( visao_do_robo ))
+				comando = np.argmax(neural.run_line( visao_do_robo ))
 
 				if( comando == 0 ):
-					self.positions[ individual ][ 0 ] = self.positions[ individual ][ 0 ] + self.velocity[ individual ][ 0 ]
-					self.positions[ individual ][ 1 ] = self.positions[ individual ][ 1 ] + self.velocity[ individual ][ 1 ]
+					posicoes[ j ][ 0 ] = posicoes[ j ][ 0 ] + velocity[ j ][ 0 ]
+					posicoes[ j ][ 1 ] = posicoes[ j ][ 1 ] + velocity[ j ][ 1 ]
 
 				#virar 90 graus a direita
 				if( comando == 1 ):
-					self.positions[ individual ][ 0 ] = self.positions[ individual ][ 0 ] + self.velocity[ individual ][ 0 ]
-					self.positions[ individual ][ 1 ] = self.positions[ individual ][ 1 ] - self.velocity[ individual ][ 1 ]
+					posicoes[ j ][ 0 ] = posicoes[ j ][ 0 ] + velocity[ j ][ 0 ]
+					posicoes[ j ][ 1 ] = posicoes[ j ][ 1 ] - velocity[ j ][ 1 ]
 
 				#virar noventa graus a esquerda
 				if( comando == 2 ):
-					self.positions[ individual ][ 0 ] = self.positions[ individual ][ 0 ] - self.velocity[ individual ][ 0 ]
-					self.positions[ individual ][ 1 ] = self.positions[ individual ][ 1 ] + self.velocity[ individual ][ 1 ]
+					posicoes[ j ][ 0 ] = posicoes[ j ][ 0 ] - velocity[ j ][ 0 ]
+					posicoes[ j ][ 1 ] = posicoes[ j ][ 1 ] + velocity[ j ][ 1 ]
 
 				#dar meia volta
 				if( comando == 3 ):
-					self.positions[ individual ][ 0 ] = self.positions[ individual ][ 0 ] - self.velocity[ individual ][ 0 ]
-					self.positions[ individual ][ 1 ] = self.positions[ individual ][ 1 ] - self.velocity[ individual ][ 1 ]
+					posicoes[ j ][ 0 ] = posicoes[ j ][ 0 ] - velocity[ j ][ 0 ]
+					posicoes[ j ][ 1 ] = posicoes[ j ][ 1 ] - velocity[ j ][ 1 ]
 
 			distancia_percorrida[i] = distancia_percorrida[i] + norma3d( posicao_anterior[i][0], posicao_anterior[i][1], interpolacao.interpolar(posicao_anterior[i][0], posicao_anterior[i][1]), posicoes[i][0], posicoes[i][1], interpolacao.interpolar( posicoes[i][0], posicoes[i][1] ) )
 
 		colisao = verifica_colisao( posicoes )
-		arquivo.writelines( t, posicoes )
+		arquivo.writelines( str(posicoes) )
 
 	arquivo.close()
 
@@ -259,5 +262,8 @@ def controle( neural, interpolacao, xlinha, ylinha, deltah, obstaculos, nome_do_
 
 if __name__ == '__main__':
 	pass
+
+
+
 
 

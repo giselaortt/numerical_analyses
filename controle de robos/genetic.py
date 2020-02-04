@@ -13,17 +13,21 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 
+#Build files have been written to: /Users/gigio/myworkingdirectory/opencv/build
+
 '''
 meu robô terá uma velocidade fixa constante, por simplicidade
 cabe a rede neural decidir para qual lado virar
 '''
 
 
+#
 def norma( x, y ):
 
 	return ( x*x + y*y ) ** 0.5
 
 
+#
 def fi( x, y ):
 
 	return cos( x/25.0 )*sin( y/25.0 )
@@ -35,16 +39,19 @@ def modulo( vetor ):
 	return ( vetor[0]*vetor[0] + vetor[1]*vetor[1] )**0.5
 
 
+#
 def produto_escalar( vetor, vetor2 ):
 
 	return ( vetor[0]*vetor2[0] + vetor[1]*vetor2[1] )
 
 
+#
 def xlinha( t, x, y ):
 
 	return (( 0.001 - fi( x, y ) )*( x - 100.0*cos(t) )) / norma( x - 100.0*cos(t), y - 100.0*sin(t) )
 
 
+#
 def ylinha( t, x, y ):
 
 	return (( -0.001 - fi(x, y) )*( y - 100.0*sin(t) ) )/norma( x - 100.0*cos(t), y - 100.0*sin(t) )

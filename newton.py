@@ -11,7 +11,7 @@ def newton_cotes():
 
 
 #TODO
-def newton():
+def newton(inicio_intervalo, fim_intervalo, precisao, x_zero, f_x, f_linha ):
 	pass
 
 

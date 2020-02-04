@@ -1,3 +1,7 @@
+#!/usr/bin/env/ python
+# -*- coding: utf-8 -*-
+
+
 import neural
 import controle
 import genetic
@@ -18,33 +22,41 @@ class fitness_para_teste:
 		answer = []
 		for robot in population:
 			saidas = robot.neural.run_multiple( self.entradas )
-			answer.append( ( erro_quadrático( saidas, self.saidas_esperadas ) ) )
+			answer.append(erro_quadratico( saidas, self.saidas_esperadas ))
 
 		return np.array(answer)
 
 
-def toy_problem():
+
+#Testando a evolução de redes neurais a partir de um problema simples
+def toy_problem_evolucao_neurais():
 	np.random.seed( int(time.time()) )
 	pop = [ genetic.Controle( 2, 3, 1 ) for _ in range(1000) ]
 	fitness = fitness_para_teste(  )
 	genetic.GeneticAlgorithm( fitness,  population = pop, population_size = 1000, max_iteration = 6000, episilon = 0.02 )
 
 
-def erro_quadrático( array1, array2 ):
 
-	#print( -1 * np.sum( (array1 - array2)**2 ) )
+def teste_do_controle():
+	#input size é o numero dos sensores do robo. nesse caso, serão oito
+	#output size é o numero de destinos que o robo pode escolher. nesse caso serão quatro.
+	n = neural.Network( inputSize = 8, hiddenSize = 10, outputSize = 4 )
+	x, y = controle.gerar_posicao_inicial(  )
+	inter = controle.Bilinear(  x_inicial = -20, x_final = 20, y_inicial = -20, y_final = 20, delta = 1, psy = controle.fi )
+	controle.controle( neural = n, interpolacao = inter, xlinha = controle.xlinha_interpolacao , ylinha = controle.ylinha_interpolacao, deltah = 1, obstaculos = None, nome_do_arquivo = 'isso_eh_um_teste')
+
+
+
+def erro_quadratico( array1, array2 ):
+
 	return -1 * np.sum( (array1 - array2)**2 )
 
-'''
-
-
- '''
 
 if __name__ == '__main__':
-	#toy_problem()
-	neural = neural.Network( 2,3,1, hiddenLayer = np.array([[ 5.26039061, 5.31781714, 4.70746083], [-4.69605835, -4.86718701, -4.85090653], [-3.18544409, 2.17933334, -3.31325609]]), outputLayer = np.array([[-4.56310107], [ 6.15418054], [-3.18097799], [-2.62864848]]))
-	saidas = neural.run_multiple( np.array([ [0,1], [1,1], [0, 0] , [1, 0]]) )
-	print( saidas )
-	print( "saida esperada" , [ 0,1,1,0 ] )
+	#toy_problem_evolucao_neurais()
+	teste_do_controle()
+
+
+
 
 

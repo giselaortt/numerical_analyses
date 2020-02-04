@@ -5,16 +5,17 @@
 import numpy as np
 
 
+
 #é necessaria uma analise prévia que garanta:
-#	a derivada nos pontos inicial e final tenham sinais diferentes
+#	a valor_pivo nos pontos inicial e final tenham sinais diferentes
 #	haja apenas uma solucao no intervalo
 # mais ou menos como uma busca binaria?
-def dicotomia( dy_dx, inicio_do_intervalo, fim_do_intervalo, precisao = 0.0001 ):
+def dicotomia( funcao, inicio_do_intervalo, fim_do_intervalo, precisao = 0.0001 ):
 
-	if( dy_dx(fim_do_intervalo) >= 0 and dy_dx(inicio_do_intervalo) <=0 ):
+	if( funcao(fim_do_intervalo) >= 0 and funcao(inicio_do_intervalo) <=0 ):
 		concavidade = True
 
-	elif( dy_dx(fim_do_intervalo)  <= 0 and dy_dx(inicio_do_intervalo) >= 0 ):
+    elif( funcao(fim_do_intervalo)  <= 0 and funcao(inicio_do_intervalo) >= 0 ):
 		concavidade = False
 
 	else:
@@ -23,11 +24,11 @@ def dicotomia( dy_dx, inicio_do_intervalo, fim_do_intervalo, precisao = 0.0001 )
 
 
 	pivo = (inicio_do_intervalo + fim_do_intervalo)/2.0
-	derivada = dy_dx(pivo)
+    valor_pivo = funcao(pivo)
 
-	while( -1.0*precisao >= derivada and derivada >= precisao ):
+	while( -1.0*precisao >= valor_pivo and valor_pivo >= precisao ):
 
-		if( derivada >= 0 ):
+		if( valor_pivo >= 0 ):
 			if( concavidade is True ):
 				inicio_do_intervalo = pivo
 			else:
@@ -39,7 +40,7 @@ def dicotomia( dy_dx, inicio_do_intervalo, fim_do_intervalo, precisao = 0.0001 )
 				inicio_do_intervalo = pivo
 
 		pivo = (inicio_do_intervalo + fim_do_intervalo)/2.0
-		derivada = dy_dx(pivo)
+		valor_pivo = funcao(pivo)
 
 	return pivo
 

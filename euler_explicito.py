@@ -24,7 +24,6 @@ def calcula_delta_t( t_inicial, t_final, numero_de_iteracoes ):
 
 
 
-
 #dx_dy é a derivada da funcao que vamos aproximar
 def metodo_euler( dy_dx, t_final, t_inicial = 0, delta_t = None, numero_de_iteracoes = None, y_inicial = 0  ):
 
