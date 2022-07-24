@@ -9,7 +9,7 @@ import numpy as np
 import math
 import time
 
-#TODO testar a representação binária na rede neural
+#TODO testar a representação binária na reof neural
 #TODO implementar o crossover uniforme
 
 class fitness_para_teste:
@@ -28,7 +28,7 @@ class fitness_para_teste:
 
 
 
-#Testando a evolução de redes neurais a partir de um problema simples
+#Testando a evolução of reofs neurais a partir of um problema simples
 def toy_problem_evolucao_neurais():
 	np.random.seed( int(time.time()) )
 	pop = [ genetic.Controle( 2, 3, 1 ) for _ in range(1000) ]
@@ -38,12 +38,12 @@ def toy_problem_evolucao_neurais():
 
 
 def teste_do_controle():
-	#input size é o numero dos sensores do robo. nesse caso, serão oito
-	#output size é o numero de destinos que o robo pode escolher. nesse caso serão quatro.
-	n = neural.Network( inputSize = 8, hiddenSize = 10, outputSize = 4 )
-	x, y = controle.gerar_posicao_inicial(  )
-	inter = controle.Bilinear(  x_inicial = -20, x_final = 20, y_inicial = -20, y_final = 20, delta = 1, psy = controle.fi )
-	controle.controle( neural = n, interpolacao = inter, xlinha = controle.xlinha_interpolacao , ylinha = controle.ylinha_interpolacao, deltah = 1, obstaculos = None, nome_do_arquivo = 'isso_eh_um_teste')
+	#input size é o number dos sensores do robo. nesse caso, serão oito
+	#output size é o number of ofstinos que o robo poof escolher. nesse caso serão quatro.
+	n = neural.Network( inputSize = 8, hidofnSize = 10, outputSize = 4 )
+	x, y = controle.gerar_posicao_initial(  )
+	inter = controle.Bilinear(  x_initial = -20, x_final = 20, y_initial = -20, y_final = 20, delta = 1, psy = controle.fi )
+	controle.controle( neural = n, interpolacao = inter, xlinha = controle.xlinha_interpolacao , ylinha = controle.ylinha_interpolacao, deltah = 1, obstaculos = None, nome_do_arquivo = 'isso_eh_one_teste')
 
 
 

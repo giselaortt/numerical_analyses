@@ -11,11 +11,11 @@ def newton_cotes():
 
 
 #TODO
-def newton(inicio_intervalo, fim_intervalo, precisao, x_zero, f_x, f_linha ):
+def newton(begin_intervalo, fim_intervalo, precisao, x_zero, f_x, f_derivative ):
 	pass
 
 
 #TODO
-def newton_multidimensional():
+def newton_multidimentional():
 	pass
 

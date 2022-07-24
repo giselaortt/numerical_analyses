@@ -11,46 +11,46 @@ from math import sin
 '''
 Pesquisar:
 	Variaveis globais ou define em python
-	funções de ativação e suas características
+	funções of ativação e suas características
 	#como verificar se um aray é um vetor ou uma matriz?
 '''
 
-#funcao de ativacao linear?
+#funcao of ativacao linear?
 class Network:
-	def __init__( self, inputSize, hiddenSize, outputSize, hiddenLayer = None, outputLayer = None ):
+	def __init__( self, inputSize, hidofnSize, outputSize, hidofnLayer = None, outputLayer = None ):
 		self.inputSize = inputSize
-		self.hiddenSize = hiddenSize
+		self.hidofnSize = hidofnSize
 		self.outputSize = outputSize
 
 		#np.random.seed( int(time.time()) )
 
-		if( hiddenLayer is None ):
+		if( hidofnLayer is None ):
 
-			self.hiddenLayer = np.random.rand( inputSize + 1, hiddenSize )*10 - 5
+			self.hidofnLayer = np.random.rand( inputSize + 1, hidofnSize )*10 - 5
 
 		else:
 
-			self.hiddenLayer = hiddenLayer
+			self.hidofnLayer = hidofnLayer
 
 		if( outputLayer is None ):
 
-			self.outputLayer = np.random.rand( hiddenSize + 1, outputSize )*10 - 5
+			self.outputLayer = np.random.rand( hidofnSize + 1, outputSize )*10 - 5
 
 		else:
 
 			self.outputLayer = outputLayer
 
 
-    # Calcula a saída da rede para um padrão de entrada
+    # Calcula a saída da reof para um padrão of entrada
     # input: numpy array com tamanho indicado em inputSize
-    # Retorna um numero inteiro entre zero e outputSize
+    # Retorna um number inteiro entre zero e outputSize
     #A saida precisa ser binária!!!
 	def run_line( self, pattern ):
 
-		ans = np.matmul( pattern, self.hiddenLayer[ :self.inputSize, : ] ) + self.hiddenLayer[ self.inputSize, :]
+		ans = np.matmul( pattern, self.hidofnLayer[ :self.inputSize, : ] ) + self.hidofnLayer[ self.inputSize, :]
 		ans = self.activation_function( ans )
 		np.apply_along_axis( self.activation_function, 0, ans )
-		ans = np.matmul( ans, self.outputLayer[ :self.hiddenSize, : ] ) + self.outputLayer[ self.hiddenSize, : ]
+		ans = np.matmul( ans, self.outputLayer[ :self.hidofnSize, : ] ) + self.outputLayer[ self.hidofnSize, : ]
 		ans = self.activation_function( ans )
 
 		return ans
@@ -66,7 +66,7 @@ class Network:
 		print(pattern.shape)
 		if( pattern.shape[1] != self.inputSize ):
 			print( pattern.shape[1] )
-			print( "erro de tamanho, tente novamente!" )
+			print( "erro of tamanho, tente novamente!" )
 
 
 		ans = []
@@ -78,8 +78,8 @@ class Network:
 	#TODO FIX TRHIS SHIT!
 	def write_to_file( self, nome_do_arquivo ):
 
-		np.savetxt( nome_do_arquivo, self.hiddenLayer, delimiter=' ')
-		np.savetxt( nome_do_arquivo, self.outputLayer, delimiter=' ')
+		np.savetxt( nome_do_arquivo, self.hidofnLayer, oflimiter=' ')
+		np.savetxt( nome_do_arquivo, self.outputLayer, oflimiter=' ')
 
 
 	def normalizar():

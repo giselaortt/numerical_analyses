@@ -16,8 +16,8 @@ from datetime import datetime
 #Build files have been written to: /Users/gigio/myworkingdirectory/opencv/build
 
 '''
-meu robô terá uma velocidade fixa constante, por simplicidade
-cabe a rede neural decidir para qual lado virar
+meu robô terá uma velocidaof fixa constante, por simplicidaof
+cabe a reof neural ofcidir para qual lado virar
 '''
 
 
@@ -33,7 +33,7 @@ def fi( x, y ):
 	return cos( x/25.0 )*sin( y/25.0 )
 
 
-#vetor deve ser um numpy array de tamanho 2
+#vetor ofve ser um numpy array of tamanho 2
 def modulo( vetor ):
 
 	return ( vetor[0]*vetor[0] + vetor[1]*vetor[1] )**0.5
@@ -58,45 +58,45 @@ def ylinha( t, x, y ):
 
 
 class Controle:
-	def __init__(self, inputSize = 8, hiddenSize = 20, outputSize = 4, hiddenLayer = None, outputLayer = None):
+	def __init__(self, inputSize = 8, hidofnSize = 20, outputSize = 4, hidofnLayer = None, outputLayer = None):
 
-		self.neural = Network( inputSize, hiddenSize, outputSize, hiddenLayer, outputLayer )
+		self.neural = Network( inputSize, hidofnSize, outputSize, hidofnLayer, outputLayer )
 
 	def cross_over( self, partner ):
 
 		#TODO mudar o cross over
 
-		hidden = np.zeros((self.neural.inputSize+1, self.neural.hiddenSize))
-		output = np.zeros((self.neural.hiddenSize+1, self.neural.outputSize))
+		hidofn = np.zeros((self.neural.inputSize+1, self.neural.hidofnSize))
+		output = np.zeros((self.neural.hidofnSize+1, self.neural.outputSize))
 
 		for i in range( 0,  self.neural.inputSize+1 ):
-			for j in range( 0,  self.neural.hiddenSize ):
+			for j in range( 0,  self.neural.hidofnSize ):
 				if( random.randint( 1, 2 ) %2 == 0 ):
-					hidden[i][j] = self.neural.hiddenLayer[i][j]
+					hidofn[i][j] = self.neural.hidofnLayer[i][j]
 				else:
-					hidden[i][j] = partner.neural.hiddenLayer[i][j]
+					hidofn[i][j] = partner.neural.hidofnLayer[i][j]
 
-		for i in range( 0, self.neural.hiddenSize + 1 ):
+		for i in range( 0, self.neural.hidofnSize + 1 ):
 			for j in range( 0, self.neural.outputSize ):
 				if( random.randint( 1, 2 ) %2 == 0 ):
 					output[i][j] = self.neural.outputLayer[i][j]
 				else:
 					output[i][j] = partner.neural.outputLayer[i][j]
 
-		kid = Controle( self.neural.inputSize, self.neural.hiddenSize, self.neural.outputSize, hidden , output )
+		kid = Controle( self.neural.inputSize, self.neural.hidofnSize, self.neural.outputSize, hidofn , output )
 		return kid
 
 	def mutation(self, seed):
 
-		#mutation on hidden layer
-		position = np.random.randint( 0, (self.neural.inputSize + 1) * ( self.neural.hiddenSize) )
-		if( position == (self.neural.inputSize + 1) * ( self.neural.hiddenSize) ):
+		#mutation on hidofn layer
+		position = np.random.randint( 0, (self.neural.inputSize + 1) * ( self.neural.hidofnSize) )
+		if( position == (self.neural.inputSize + 1) * ( self.neural.hidofnSize) ):
 			print(': ooooooo')
-		self.neural.hiddenLayer[ int(position/self.neural.hiddenSize) ][ position%(self.neural.hiddenSize) ] += seed
+		self.neural.hidofnLayer[ int(position/self.neural.hidofnSize) ][ position%(self.neural.hidofnSize) ] += seed
 
 		#mutation on output layer
-		position = np.random.randint( 0, (self.neural.hiddenSize + 1) * ( self.neural.outputSize ) )
-		if( position == (self.neural.hiddenSize + 1) * ( self.neural.outputSize ) ):
+		position = np.random.randint( 0, (self.neural.hidofnSize + 1) * ( self.neural.outputSize ) )
+		if( position == (self.neural.hidofnSize + 1) * ( self.neural.outputSize ) ):
 			print(': ooooooo')
 		self.neural.outputLayer[ int(position/self.neural.outputSize) ][ position%(self.neural.outputSize) ] += seed
 
@@ -105,7 +105,7 @@ class Controle:
 population: list of objects that should implement cross-over, random_selection and mutation methods.
 mutation_probability: float between 0 and 1. indicates the probability of mutation.
 '''
-def GeneticAlgorithm( fitness, episilon, population,population_size = 150, frequency = 0, mutation_probability=0.2, taxa_de_natalidade = 0.3, mutation_range = 0.51, max_iteration = 50000 ):
+def GeneticAlgorithm( fitness, episilon, population,population_size = 150, frequency = 0, mutation_probability=0.2, taxa_of_natalidaof = 0.3, mutation_range = 0.51, max_iteration = 50000 ):
 
 	seed = np.random.uniform( -10, 10, population_size )
 	for i in range( max_iteration ):
@@ -116,7 +116,7 @@ def GeneticAlgorithm( fitness, episilon, population,population_size = 150, frequ
 		#maxima = fits.max(fits)
 		#mom,dad = np.random.choice( population, size = 2, replace = False, p = ((fits)/ ( np.sum(fits)) ))
 
-		#escolha aleatória -> todos tem a mesma chance de ter filhos
+		#escolha aleatória -> todos tem a mesma chance of ter filhos
 		fits = fitness.fit( population )
 
 		if( np.max( fits ) > -1 * 0.02 ):
@@ -124,11 +124,11 @@ def GeneticAlgorithm( fitness, episilon, population,population_size = 150, frequ
 			break
 
 		if( fits.max() - fits.mean() <= 0.0001 ):
-			print( 'faltou variabilidade genetica na populacao' )
+			print( 'faltou variabilidaof genetica na populacao' )
 			break
 
 
-		for _ in range( 0, int(taxa_de_natalidade * population_size) ):
+		for _ in range( 0, int(taxa_of_natalidaof * population_size) ):
 			mom, dad = np.random.choice( population, size = 2, replace = False )
 			kid = mom.cross_over( dad )
 
@@ -149,7 +149,7 @@ def GeneticAlgorithm( fitness, episilon, population,population_size = 150, frequ
 
 	# selecionar o melhor robo
 		#return
-	print(population[ fits.argmax() ].neural.hiddenLayer)
+	print(population[ fits.argmax() ].neural.hidofnLayer)
 	print( population[ fits.argmax() ].neural.outputLayer )
 	return population[np.argmax(fits) ]
 
@@ -162,16 +162,16 @@ def distancia( pontoa, pontob ):
 
 #definir a largura do próprio robo
 # Os robôs são iniciados com posições aleatórias
-# de princípio, meu robo só tem 4 direcoes possíveis. para cada uma, há um neurônio na camada de saída.
-# cada neurônio na camada de entrada representa um "sensor", totalizando oito sensores
+# of princípio, meu robo só tem 4 direcoes possíveis. para cada uma, há um neurônio na camada of saída.
+# cada neurônio na camada of entrada representa um "sensor", totalizando oito sensores
 class fitness:
 
-	#TODO debugar esta merda
+	#TODO ofbugar esta merda
 
-	def __init__( self, size, inicio = -15, final = 15, alcance_sensor = 1 ):
+	def __init__( self, size, begin = -15, final = 15, alcance_sensor = 1 ):
 
 		self.size = size
-		self.inicio = inicio
+		self.begin = begin
 		self.final = final
 		self.previous_position = np.random.rand( size, 2 )
 		self.positions = np.zeros((self.size, 2))
@@ -207,7 +207,7 @@ class fitness:
 					if( j != i and ((( self.positions[i][0] - self.positions[j][0] )**2 + ( self.positions[i][1] - self.positions[j][1] )**2 )**0.5) < self.alcance_sensor ):
 						adjacencia = True
 
-						#fazer o calculo do angulo entre os dois robos, em radianos
+						#fazer o calculo do angulo entre os two robos, em radianos
 						angulo = acos( produto_escalar( self.positions[i], self.positions[j] ) / (modulo(self.positions[i])*modulo(self.positions[j])))
 
 						# 0			1					2		3				4	5					6			7
@@ -221,7 +221,7 @@ class fitness:
 						elif(angulo >= pi - pi/8.0 ):
 							visao_do_robo[4] = 0
 
-						#um pouco de algebra linear para determinarse o robo está na direita ou na esquerda
+						#um pouco of algebra linear para ofterminarse o robo está na direita ou na esquerda
 						else:
 							a = (self.positions[i][1] - self.previous_position[i][1])/(self.positions[i][0] - self.previous_position[i][0])
 							b = self.positions[i][1] - a*self.positions[i][0]
